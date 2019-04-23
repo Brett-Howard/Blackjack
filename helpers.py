@@ -32,11 +32,15 @@ def print_table(players, dealer_cover=True, print_sums=False, add_blank=True):
 
 def hand_sum(hand):
     sum_ = 0
+    ace_in_hand = False
     for card in hand:
         if isinstance(card.rank, int):
             sum_ += card.rank
-        elif 'A' == card.rank:
+        elif 'A' == card.rank and not ace_in_hand:
             sum_ += 11
+            ace_in_hand = True
+        elif 'A' == card.rank and ace_in_hand:
+            sum += 1
         else:
             sum_ += 10
     return sum_
