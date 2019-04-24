@@ -15,7 +15,7 @@ del ranks
 
 num_players = 0
 while num_players < 1:
-    num_players = int(input("How many players? "))
+    num_players = int(input("How many players? "))  # should put in a try to handle poorly formatted responses
     if num_players < 1:
         print("The dealer can't play itself.")
 
@@ -72,15 +72,40 @@ while True:
                     player.hand.append(deck_shoe.pop())
                 print_table(players)
 
-        print(Fore.YELLOW, "\nHand Complete", end='')
-        highest_sum = 0
-        winner = None
-        for player in players:
-            if not is_bust(player.hand) and hand_sum(player.hand) > highest_sum:
-                highest_sum = hand_sum(player.hand)
-                winner = player.name
+        print(Fore.YELLOW, "\nHand Complete   >   ", end='')
 
-        print("\t\t>>>\t\t{} won".format(winner))
+        dealer_sum = 0
+        dealer_bust = False
+        players_who_won = []
+
+        for player in reversed(players):
+            if "Dealer" == player.name:
+                dealer_sum = hand_sum(player.hand)
+
+                if is_bust(player.hand):   # doing in reverse order so Dealer should be first
+                    dealer_bust = True
+                else:
+                    dealer_bust = False
+
+            else:
+                # this logic calls a push a win but I don't care.
+                if not is_bust(player.hand) and (hand_sum(player.hand) >= dealer_sum or dealer_bust):
+                    players_who_won.append(player.name)
+
+        if players_who_won:
+            num_winners = len(players_who_won)
+            if num_winners == 1:
+                print(players_who_won[0], end='')
+            else:
+                for name in players_who_won:
+                    if 1 == num_winners:
+                        print("and " + name, end='')
+                    else:
+                        print(name + ", ", end='')  # ends up putting a comma for only 2 winners but meh that's fine...
+                        num_winners -= 1
+            print(" won")
+        else:
+            print("Dealer won!")
         print(Style.RESET_ALL, end='')
 
         # clear the table
